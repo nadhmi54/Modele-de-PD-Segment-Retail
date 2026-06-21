@@ -16,12 +16,12 @@ from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.predict import predict_client
-from PD_Model.app.api.schemas import ClientInput, PredictionOutput, HealthOutput, ModelInfoOutput, RiskBand
+from app.api.schemas import ClientInput, PredictionOutput, HealthOutput, ModelInfoOutput, RiskBand
 
 # ── Config ────────────────────────────────────────────────────────────────────
-BASE_DIR    = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR    = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.yaml')
 
 with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
