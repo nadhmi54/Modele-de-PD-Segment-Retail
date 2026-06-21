@@ -1,0 +1,137 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Configuration Centralisée — Modèle PD Retail
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Chemins ───────────────────────────────────────────────────────────────────
+paths:
+  data:    "data/simulated_retail_pd_dataset_10_variables.xlsx"
+  models:  "models/"
+  figures: "reports/figures/"
+  docs:    "docs/"
+  mlruns:  "mlruns/"
+
+# ── Données ───────────────────────────────────────────────────────────────────
+data:
+  target:       "default_12m"
+  id_column:    "customer_id"
+  test_size:    0.2
+  random_state: 42
+
+  numerical_cols:
+    - bureau_score
+    - monthly_income
+    - dti
+    - utilization_rate
+    - num_credit_lines
+    - missed_payments_3m
+    - overdrawn_days_3m
+    - max_dpd_12m
+
+  binary_cols:
+    - salary_domiciliation
+
+  categorical_cols:
+    - employment_status
+
+  employment_categories:
+    - Permanent
+    - Self_Employed
+    - Student
+    - Temporary
+    - Unemployed
+
+# ── Preprocessing ─────────────────────────────────────────────────────────────
+preprocessing:
+  imputation:
+    strategy: "median"
+    columns:
+      - bureau_score
+      - monthly_income
+
+  capping:
+    percentile: 0.99
+    columns:
+      - monthly_income
+      - dti
+      - utilization_rate
+
+  encoding:
+    method:        "one_hot"
+    drop_first:    true
+    reference_cat: "Permanent"
+
+  scaling:
+    method:  "standard"
+    fit_on:  "train_only"
+
+# ── Modèle ────────────────────────────────────────────────────────────────────
+model:
+  algorithm: "LogisticRegression"
+  params:
+    C:            1.0
+    class_weight: "balanced"
+    solver:       "lbfgs"
+    max_iter:     1000
+    random_state: 42
+
+  cross_validation:
+    n_splits:     5
+    shuffle:      true
+    random_state: 42
+
+# ── Évaluation ────────────────────────────────────────────────────────────────
+evaluation:
+  threshold:       0.47
+  overfitting_max: 0.02
+  benchmarks:
+    auc_min:  0.75
+    gini_min: 0.50
+    ks_min:   0.30
+
+# ── Grille de risque ──────────────────────────────────────────────────────────
+risk_bands:
+  - label:          "Faible"
+    pd_min:         0.00
+    pd_max:         0.15
+    color:          "#27AE60"
+    recommendation: "Approuver"
+    level:          1
+
+  - label:          "Modéré"
+    pd_min:         0.15
+    pd_max:         0.35
+    color:          "#F0A500"
+    recommendation: "Approuver avec suivi"
+    level:          2
+
+  - label:          "Élevé"
+    pd_min:         0.35
+    pd_max:         0.55
+    color:          "#E67E22"
+    recommendation: "Revue manuelle"
+    level:          3
+
+  - label:          "Très élevé"
+    pd_min:         0.55
+    pd_max:         1.00
+    color:          "#C0392B"
+    recommendation: "Refuser"
+    level:          4
+
+# ── API ───────────────────────────────────────────────────────────────────────
+api:
+  host:    "0.0.0.0"
+  port:    8000
+  version: "1.0.0"
+  title:   "PD Scoring API — Retail"
+
+# ── MLflow ────────────────────────────────────────────────────────────────────
+mlflow:
+  experiment_name: "PD_Retail_LogisticRegression"
+  tracking_uri:    "mlruns/mlflow.db"   # SQLite backend
+  model_name:      "pd_retail_lr"
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend:
+  api_url: "http://localhost:8000"
+  port:    8501
