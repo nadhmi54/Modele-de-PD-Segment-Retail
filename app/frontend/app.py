@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 # ── Config ────────────────────────────────────────────────────────────────────
-BASE_DIR    = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR    = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.yaml')
 with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
     cfg = yaml.safe_load(f)
@@ -19,117 +19,133 @@ API_URL = cfg['frontend']['api_url']
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="PD Scoring | EY Advisory",
-    page_icon="📊",
+    page_title="PD Scoring | EY ",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# ── EY Brand Colors ───────────────────────────────────────────────────────────
+# EY Yellow: #FFE600 | EY Dark: #1A1A24 | EY Gray: #747480 | EY Light: #F6F6FA
+
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EYInterstate:wght@300;400;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-.main { background-color: #F0F4F8; }
-.block-container { padding-top: 1.5rem; padding-bottom: 2rem; }
+.main { background-color: #F6F6FA; }
+.block-container { padding-top: 1rem; padding-bottom: 2rem; }
 
-.header-banner {
-  background: linear-gradient(135deg, #0F1B2D 0%, #1A2E4A 50%, #2E5B8C 100%);
-  border-radius: 18px; padding: 30px 40px; margin-bottom: 28px;
+/* ── HEADER EY ── */
+.ey-header {
+  background: #1A1A24;
+  border-bottom: 4px solid #FFE600;
+  padding: 20px 36px;
+  margin-bottom: 28px;
   display: flex; align-items: center; justify-content: space-between;
-  box-shadow: 0 8px 32px rgba(15,27,45,0.35);
+  border-radius: 12px;
 }
-.header-left h1 { color: #FFFFFF; font-size: 2rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
-.header-left p  { color: #90A8C3; font-size: 0.9rem; margin: 6px 0 0; }
-.header-right { text-align: right; }
-.ey-badge {
-  background: #F0A500; color: #0F1B2D; border-radius: 8px;
-  padding: 7px 18px; font-weight: 800; font-size: 0.9rem; display: inline-block;
+.ey-header-left { display: flex; align-items: center; gap: 20px; }
+.ey-logo-svg { flex-shrink: 0; }
+.ey-header-title h1 {
+  color: #FFFFFF; font-size: 1.6rem; font-weight: 800;
+  margin: 0; letter-spacing: -0.3px;
 }
-.api-status { margin-top: 8px; font-size: 0.8rem; }
+.ey-header-title p { color: #747480; font-size: 0.85rem; margin: 4px 0 0; }
+.ey-header-right { text-align: right; }
+.ey-tag {
+  background: #FFE600; color: #1A1A24;
+  padding: 6px 16px; font-weight: 800; font-size: 0.82rem;
+  display: inline-block; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.api-status { margin-top: 6px; font-size: 0.78rem; color: #747480; }
 
+/* ── CARDS ── */
 .card {
-  background: #FFFFFF; border-radius: 16px; padding: 26px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.06); border: 1px solid #E2EBF5;
+  background: #FFFFFF; border-radius: 4px; padding: 24px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+  border-left: 4px solid #FFE600;
   margin-bottom: 20px;
 }
 .card-title {
-  font-size: 0.78rem; font-weight: 700; color: #64748B;
-  text-transform: uppercase; letter-spacing: 0.1em;
-  margin-bottom: 18px; padding-bottom: 12px;
-  border-bottom: 3px solid #F0A500;
+  font-size: 0.75rem; font-weight: 700; color: #747480;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 18px; padding-bottom: 10px;
+  border-bottom: 2px solid #FFE600;
 }
 .section-header {
-  font-size: 0.88rem; font-weight: 600; color: #1A2E4A;
-  margin: 18px 0 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 0.88rem; font-weight: 700; color: #1A1A24;
+  margin: 18px 0 12px;
 }
-.divider { height: 1px; background: #E8EDF5; margin: 20px 0; }
+.divider { height: 1px; background: #E8E8EE; margin: 20px 0; }
 
-.score-big {
-  font-size: 4.5rem; font-weight: 900; letter-spacing: -3px;
-  background: linear-gradient(135deg, #2E5B8C, #1A2E4A);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  line-height: 1;
-}
-.score-unit { font-size: 1.5rem; font-weight: 600; color: #64748B; }
-
+/* ── RISK PILLS ── */
 .risk-pill {
-  display: inline-block; border-radius: 50px;
+  display: inline-block; border-radius: 2px;
   padding: 10px 28px; font-weight: 700; font-size: 1.05rem;
-  margin: 10px 0; letter-spacing: 0.02em;
+  margin: 10px 0; letter-spacing: 0.04em; text-transform: uppercase;
 }
-.pill-low    { background:#DCFCE7; color:#15803D; border: 2px solid #22C55E; }
-.pill-mod    { background:#FEF9C3; color:#92400E; border: 2px solid #EAB308; }
-.pill-high   { background:#FFEDD5; color:#C2410C; border: 2px solid #F97316; }
-.pill-vhigh  { background:#FEE2E2; color:#991B1B; border: 2px solid #EF4444; }
+.pill-low    { background:#DCFCE7; color:#15803D; border-left: 5px solid #22C55E; }
+.pill-mod    { background:#FEFCE8; color:#854D0E; border-left: 5px solid #FFE600; }
+.pill-high   { background:#FFF7ED; color:#C2410C; border-left: 5px solid #F97316; }
+.pill-vhigh  { background:#FEF2F2; color:#991B1B; border-left: 5px solid #EF4444; }
 
 .reco-box {
-  border-radius: 12px; padding: 16px 22px; font-weight: 600;
+  border-radius: 4px; padding: 16px 22px; font-weight: 700;
   font-size: 0.95rem; text-align: center; margin-top: 14px;
+  text-transform: uppercase; letter-spacing: 0.05em;
 }
-.reco-approve { background:#F0FDF4; color:#15803D; border: 2px solid #22C55E; }
-.reco-watch   { background:#FFFBEB; color:#92400E; border: 2px solid #EAB308; }
-.reco-review  { background:#FFF7ED; color:#C2410C; border: 2px solid #F97316; }
-.reco-reject  { background:#FEF2F2; color:#991B1B; border: 2px solid #EF4444; }
+.reco-approve { background:#F0FDF4; color:#15803D; border-left: 5px solid #22C55E; }
+.reco-watch   { background:#FEFCE8; color:#854D0E; border-left: 5px solid #FFE600; }
+.reco-review  { background:#FFF7ED; color:#C2410C; border-left: 5px solid #F97316; }
+.reco-reject  { background:#FEF2F2; color:#991B1B; border-left: 5px solid #EF4444; }
 
+/* ── METRICS ── */
 .metric-mini {
-  background: #F8FAFC; border-radius: 10px; padding: 14px;
-  text-align: center; border: 1px solid #E2EBF5;
+  background: #F6F6FA; border-radius: 4px; padding: 14px;
+  text-align: center; border-bottom: 3px solid #FFE600;
 }
-.metric-mini .val { font-size: 1.4rem; font-weight: 700; color: #2E5B8C; }
-.metric-mini .lbl { font-size: 0.7rem; color: #64748B; margin-top: 3px; font-weight: 500; }
+.metric-mini .val { font-size: 1.4rem; font-weight: 800; color: #1A1A24; }
+.metric-mini .lbl { font-size: 0.7rem; color: #747480; margin-top: 3px; font-weight: 600; text-transform: uppercase; }
 
-[data-testid="stSidebar"] {
-  background: linear-gradient(180deg, #0F1B2D 0%, #1A2E4A 100%);
-}
-[data-testid="stSidebar"] * { color: #CBD5E0 !important; }
-[data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color: #FFFFFF !important; }
+/* ── SIDEBAR ── */
+[data-testid="stSidebar"] { background: #1A1A24; }
+[data-testid="stSidebar"] * { color: #CCCCCC !important; }
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 { color: #FFFFFF !important; border-bottom: 2px solid #FFE600; padding-bottom: 6px; }
+[data-testid="stSidebar"] .stMetric label { color: #747480 !important; font-size: 0.75rem !important; text-transform: uppercase; }
+[data-testid="stSidebar"] .stMetric [data-testid="stMetricValue"] { color: #FFE600 !important; font-weight: 800 !important; }
 
+/* ── BUTTON ── */
 .stButton > button {
-  background: linear-gradient(135deg, #2E5B8C 0%, #1A2E4A 100%) !important;
-  color: white !important; border: none !important; border-radius: 12px !important;
-  padding: 14px 32px !important; font-weight: 700 !important; font-size: 1rem !important;
-  width: 100% !important; letter-spacing: 0.02em !important;
-  box-shadow: 0 4px 16px rgba(46,91,140,0.35) !important;
+  background: #FFE600 !important; color: #1A1A24 !important;
+  border: none !important; border-radius: 2px !important;
+  padding: 14px 32px !important; font-weight: 800 !important;
+  font-size: 1rem !important; width: 100% !important;
+  letter-spacing: 0.05em !important; text-transform: uppercase !important;
+  box-shadow: 0 2px 8px rgba(255,230,0,0.3) !important;
   transition: all 0.2s ease !important;
 }
 .stButton > button:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 24px rgba(46,91,140,0.45) !important;
+  background: #F5DC00 !important;
+  box-shadow: 0 4px 16px rgba(255,230,0,0.5) !important;
+  transform: translateY(-1px) !important;
 }
 
-.empty-state {
-  text-align: center; padding: 50px 30px;
-}
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 50px 30px; }
 .empty-state .icon { font-size: 5rem; margin-bottom: 16px; }
-.empty-state h3 { color: #2E5B8C; font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-.empty-state p  { color: #64748B; font-size: 0.9rem; line-height: 1.7; }
+.empty-state h3 { color: #1A1A24; font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+.empty-state p  { color: #747480; font-size: 0.9rem; line-height: 1.7; }
 .perf-pills { display: flex; justify-content: center; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
-.perf-pill  {
-  background: #EBF5FF; color: #2E5B8C; border-radius: 50px;
-  padding: 8px 20px; font-weight: 700; font-size: 0.88rem;
-  border: 1px solid #BFDBFE;
+.perf-pill {
+  background: #1A1A24; color: #FFE600; border-radius: 2px;
+  padding: 8px 20px; font-weight: 700; font-size: 0.85rem;
+  border: 1px solid #FFE600; text-transform: uppercase; letter-spacing: 0.05em;
 }
+
+/* ── INPUTS ── */
+.stNumberInput > div > div > input { border-radius: 2px !important; border-color: #E8E8EE !important; }
+.stSelectbox > div > div { border-radius: 2px !important; }
 
 #MainMenu, footer, header { visibility: hidden; }
 </style>
@@ -162,12 +178,12 @@ def gauge(score):
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=round(score * 100, 1),
-        number={'suffix': '%', 'font': {'size': 40, 'color': '#1A2E4A', 'family': 'Inter'}},
+        number={'suffix': '%', 'font': {'size': 40, 'color': '#1A1A24', 'family': 'Inter'}},
         gauge={
             'axis': {'range': [0, 100], 'tickwidth': 1, 'tickcolor': '#94A3B8',
                      'tickfont': {'size': 10}, 'nticks': 6},
-            'bar': {'color': '#2E5B8C', 'thickness': 0.25},
-            'bgcolor': '#F8FAFC',
+            'bar': {'color': '#FFE600', 'thickness': 0.25},
+            'bgcolor': '#F6F6FA',
             'borderwidth': 0,
             'steps': [
                 {'range': [0,  15], 'color': '#DCFCE7'},
@@ -176,7 +192,7 @@ def gauge(score):
                 {'range': [55,100], 'color': '#FEE2E2'},
             ],
             'threshold': {
-                'line': {'color': '#1A2E4A', 'width': 3},
+                'line': {'color': '#1A1A24', 'width': 3},
                 'thickness': 0.8,
                 'value': round(score * 100, 1)
             }
@@ -201,7 +217,7 @@ def drivers_chart(drivers):
         marker={'color': colors, 'line': {'width': 0}},
         text=[f"{v:+.3f}" for v in values],
         textposition='outside',
-        textfont={'size': 10.5, 'family': 'Inter', 'color': '#1A2E4A'}
+        textfont={'size': 10.5, 'family': 'Inter', 'color': '#1A1A24'}
     ))
     fig.update_layout(
         height=300, margin=dict(t=8, b=8, l=8, r=55),
@@ -219,15 +235,26 @@ api_ok    = api_health()
 api_dot   = "🟢" if api_ok else "🔴"
 api_label = "API connectée" if api_ok else "API hors ligne"
 
+EY_LOGO_SVG = """
+<svg width="64" height="64" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" fill="#1A1A24"/>
+  <polygon points="20,130 100,20 180,20 100,75" fill="#FFE600"/>
+  <text x="10" y="185" font-family="Arial Black,Arial" font-weight="900"
+        font-size="108" fill="#FFFFFF" letter-spacing="-6">EY</text>
+</svg>
+"""
+
 st.markdown(f"""
-<div class="header-banner">
-  <div class="header-left">
-    <h1>📊 PD Scoring — Retail</h1>
-    <p>Probabilité de Défaut · Régression Logistique · Bâle II/III</p>
+<div class="ey-header">
+  <div class="ey-header-left">
+    <div class="ey-logo-svg">{EY_LOGO_SVG}</div>
+    <div class="ey-header-title">
+      <h1>PD Scoring — Segment Retail</h1>
+      <p>Probabilité de Défaut &nbsp;·&nbsp; Régression Logistique &nbsp;·&nbsp; Bâle II / III</p>
+    </div>
   </div>
-  <div class="header-right">
-    <div class="ey-badge">EY Advisory</div>
-    <div class="api-status" style="color:#90A8C3;">{api_dot} {api_label}</div>
+  <div class="ey-header-right">
+    <div class="api-status">{api_dot} {api_label}</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -282,7 +309,7 @@ with form_col:
     st.markdown('<div class="card-title">🧾 Profil Client</div>', unsafe_allow_html=True)
 
     # Section 1
-    st.markdown('<div class="section-header">💰 Situation Financière</div>',
+    st.markdown('<div class="section-header"> Situation Financière</div>',
                 unsafe_allow_html=True)
     f1, f2 = st.columns(2)
     with f1:
@@ -307,7 +334,7 @@ with form_col:
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     # Section 2
-    st.markdown('<div class="section-header">⚠️ Comportement de Paiement (3 mois)</div>',
+    st.markdown('<div class="section-header"> Comportement de Paiement (3 mois)</div>',
                 unsafe_allow_html=True)
     f3, f4, f5 = st.columns(3)
     with f3:
@@ -326,7 +353,7 @@ with form_col:
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
     # Section 3
-    st.markdown('<div class="section-header">👔 Emploi & Bancarisation</div>',
+    st.markdown('<div class="section-header"> Emploi & Bancarisation</div>',
                 unsafe_allow_html=True)
     f6, f7, f8 = st.columns(3)
     with f6:
@@ -354,7 +381,7 @@ with form_col:
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    score_btn = st.button("⚡  Calculer la Probabilité de Défaut",
+    score_btn = st.button("  Calculer la Probabilité de Défaut",
                           use_container_width=True)
 
 

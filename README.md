@@ -284,10 +284,10 @@ python -X utf8 src/train.py
 python -X utf8 src/evaluate.py
 
 # 3. Lancer l'API (Terminal 1)
-python -X utf8 -m uvicorn api.app:app --port 8000 --reload
+python -X utf8 -m uvicorn app.api.app:app --port 8000 --reload 
 
 # 4. Lancer le Frontend (Terminal 2)
-python -X utf8 -m streamlit run frontend/app.py --server.port 8501
+python -X utf8 -m streamlit run app/frontend/app.py --server.port 8502
 ```
 
 ### Option 2 — Docker
