@@ -272,7 +272,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### 📈 Performance Modèle")
-    metrics = [("AUC-ROC","0.8625"), ("Gini","0.7251"), ("KS","0.5775"), ("Rappel","75.1%")]
+    metrics = [("AUC-ROC","0.8629"), ("Gini","0.7257"), ("KS","0.6115"), ("Rappel","76.0%")]
     c1, c2 = st.columns(2)
     for i, (lbl, val) in enumerate(metrics):
         (c1 if i % 2 == 0 else c2).metric(lbl, val)
@@ -400,9 +400,9 @@ with res_col:
               puis cliquez sur <strong>Calculer la PD</strong>
             </p>
             <div class="perf-pills">
-              <div class="perf-pill">AUC 0.8625</div>
-              <div class="perf-pill">Gini 0.7251</div>
-              <div class="perf-pill">KS 0.5775</div>
+              <div class="perf-pill">AUC 0.8629</div>
+              <div class="perf-pill">Gini 0.7257</div>
+              <div class="perf-pill">KS 0.6115</div>
             </div>
           </div>
         </div>
