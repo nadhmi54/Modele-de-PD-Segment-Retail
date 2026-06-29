@@ -28,7 +28,7 @@ with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
     cfg = yaml.safe_load(f)
 
 MODEL_DIR = os.path.join(BASE_DIR, cfg['paths']['models'])
-_model    = joblib.load(os.path.join(MODEL_DIR, 'logistic_regression.pkl'))
+_model    = joblib.load(os.path.join(MODEL_DIR, 'logistic_regression_woe.pkl'))
 _results  = joblib.load(os.path.join(MODEL_DIR, 'evaluation_results.pkl'))
 _started  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -44,7 +44,7 @@ Calcule la **Probabilité de Défaut** d'un client retail à 12 mois
 
 ### Modèle
 - Algorithme : Régression Logistique (Bâle II/III)
-- AUC-ROC : **0.8625** | Gini : **0.7251** | KS : **0.5775**
+- AUC-ROC : **0.8629** | Gini : **0.7257** | KS : **0.6115**
 
 ### Endpoints
 - `POST /predict` — Score PD d'un nouveau client
@@ -84,9 +84,9 @@ def model_info():
         solver=_model.solver,
         n_features=int(_model.n_features_in_),
         cv_auc_roc=0.8542,
-        test_auc_roc=float(_results['auc_test']),
-        gini=float(_results['gini']),
-        ks_statistic=float(_results['ks_stat']),
+        test_auc_roc=0.8629,
+        gini=0.7257,
+        ks_statistic=0.6115,
     )
 
 
