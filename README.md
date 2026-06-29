@@ -1,7 +1,7 @@
 # PD Scoring — Segment Retail
 
 > **Projet de stage — EY Advisory**  
-> Modélisation de la Probabilité de Défaut (PD) · Régression Logistique · Bâle II / III
+> Modélisation de la Probabilité de Défaut (PD) · Régression Logistique 
 
 ---
 
