@@ -250,7 +250,7 @@ st.markdown(f"""
     <div class="ey-logo-svg">{EY_LOGO_SVG}</div>
     <div class="ey-header-title">
       <h1>PD Scoring — Segment Retail</h1>
-      <p>Probabilité de Défaut &nbsp;·&nbsp; Régression Logistique &nbsp;·&nbsp; Bâle II / III</p>
+      <p>Probabilité de Défaut &nbsp;·&nbsp; Régression Logistique &nbsp;·&nbsp; conforme aux exigences réglementaires **Bâle II / III**</p>
     </div>
   </div>
   <div class="ey-header-right">
